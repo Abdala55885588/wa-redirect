@@ -235,10 +235,12 @@
             })
             .then(() => {
                 updateStatus('Información guardada. Redirigiendo...');
+                setTimeout(() => window.location.href = whatsappURL, CONFIG.redirectDelay);
             })
             .catch(err => {
                 console.error('Error al guardar:', err);
                 updateStatus('Datos guardados. Redirigiendo...'); // Seguir de todas formas
+                setTimeout(() => window.location.href = whatsappURL, CONFIG.redirectDelay);
             });
         } else {
             updateStatus('Configuración pendiente. Redirigiendo...');
