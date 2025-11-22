@@ -211,6 +211,7 @@
         const now = Date.now();
         const randomPart = Math.random().toString(36).substring(2, 8);
         capturedData.session_id = 'sess_' + now + '_' + randomPart;
+        capturedData.session_id = sessionId;
         
         if (CONFIG.debug) {
             debugEl.innerHTML = '<strong>Datos capturados:</strong><pre>' + 
