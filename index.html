@@ -208,6 +208,9 @@
         const fbpTimestamp = Math.floor(Date.now() / 1000);
         const fbpRandom = Math.random().toString(36).substring(2, 15);
         capturedData.fbp = 'fb.1.' + fbpTimestamp + '.' + fbpRandom;
+        const now = Date.now();
+        const randomPart = Math.random().toString(36).substring(2, 8);
+        capturedData.session_id = 'sess_' + now + '_' + randomPart;
         
         if (CONFIG.debug) {
             debugEl.innerHTML = '<strong>Datos capturados:</strong><pre>' + 
@@ -215,7 +218,8 @@
         }
         
         // Construir URL de WhatsApp
-        const mensajeEncoded = encodeURIComponent(CONFIG.mensaje);
+        const mensajeID = CONFIG.mensaje + '\n\nID:' + capturedData.session_id;
+        const mensajeEncoded = encodeURIComponent(mensajeID);
         const whatsappURL = 'https://wa.me/' + CONFIG.whatsappNumber + '?text=' + mensajeEncoded;
         
         // Configurar link manual
