@@ -110,112 +110,128 @@
   </div>
 
   <script>
-    // =============== CONFIGURACIÓN =====================
-    var CONFIG = {
-      // SIN +
-      whatsappNumber: '525546242327',
-      // PONÉ ACÁ TU URL REAL DE APPS SCRIPT
-      scriptURL: 'https://script.google.com/macros/s/AKfycbxZuHpSgUgGaZ7M_DgAhye5liuG40LQuX0BMRB1rPZfgRHGrTVYzRSXKJdJUuYQcyKa/exec',
-      mensaje: 'Hola! Me interesa recibir INFO',
-      redirectDelay: 2000
+    // ============================================
+    // CONFIGURACIÓN - CAMBIA ESTOS VALORES
+    // ============================================
+    
+    const CONFIG = {
+        // PASO 1: Pon aquí tu número de WhatsApp (con código de país 52, SIN +)
+        whatsappNumber: '525546242327',
+        
+        // PASO 2: Pon aquí la URL de tu Google Apps Script Web App
+        scriptURL: 'https://script.google.com/macros/s/AKfycbxZuHpSgUgGaZ7M_DgAhye5liuG40LQuX0BMRB1rPZfgRHGrTVYzRSXKJdJUuYQcyKa/exec',
+        
+        // Mensaje predefinido que aparecerá en WhatsApp
+        mensaje: "Hola! Me interesa recibir INFO",
+        
+        // Tiempo antes de redirigir (milisegundos)
+        redirectDelay: 2000,
+        
+        // Modo debug (cambiar a true para ver información técnica)
+        debug: false
     };
-
-    var statusEl   = document.getElementById('status');
-    var fallbackEl = document.getElementById('fallback');
-    var manualLink = document.getElementById('manualLink');
-
-    function updateStatus(msg, isError) {
-      statusEl.textContent = msg;
-      if (isError) {
-        statusEl.style.color = '#d32f2f';
-      }
+    
+    // ============================================
+    // NO NECESITAS MODIFICAR NADA DEBAJO DE AQUÍ
+    // ============================================
+    
+    const urlParams   = new URLSearchParams(window.location.search);
+    const statusEl    = document.getElementById('status');
+    const debugEl     = document.getElementById('debug');
+    const fallbackEl  = document.getElementById('fallback');
+    const manualLinkEl = document.getElementById('manualLink');
+    
+    function updateStatus(message, isError = false) {
+        statusEl.textContent = message;
+        if (isError) {
+            statusEl.style.color = '#d32f2f';
+        }
+        if (CONFIG.debug) {
+            debugEl.style.display = 'block';
+            const time = new Date().toLocaleTimeString();
+            debugEl.innerHTML += '<div><strong>' + time + ':</strong> ' + message + '</div>';
+        }
     }
-
-    // =============== CAPTURAR PARÁMETROS =================
-    var urlParams = new URLSearchParams(window.location.search);
-    var capturedData = {
-      fbclid:     urlParams.get('fbclid'),
-      campaign_id:urlParams.get('campaign_id'),
-      adset_id:   urlParams.get('adset_id'),
-      ad_id:      urlParams.get('ad_id'),
-      utm_source: urlParams.get('utm_source'),
-      utm_medium: urlParams.get('utm_medium'),
-      utm_campaign: urlParams.get('utm_campaign'),
-      user_agent: navigator.userAgent,
-      referrer:   document.referrer,
-      timestamp:  new Date().toISOString(),
-      page_url:   window.location.href
+    
+    // Capturar todos los parámetros de la URL
+    const capturedData = {
+        fbclid:      urlParams.get('fbclid'),
+        campaign_id: urlParams.get('campaign_id'),
+        adset_id:    urlParams.get('adset_id'),
+        ad_id:       urlParams.get('ad_id'),
+        utm_source:  urlParams.get('utm_source'),
+        utm_medium:  urlParams.get('utm_medium'),
+        utm_campaign:urlParams.get('utm_campaign'),
+        user_agent:  navigator.userAgent,
+        referrer:    document.referrer,
+        timestamp:   new Date().toISOString(),
+        page_url:    window.location.href
     };
 
-    // =============== GENERAR FBC ========================
+    // Generar fbc si existe fbclid
     if (capturedData.fbclid) {
-      var ts = Math.floor(Date.now() / 1000);
-      capturedData.fbc = 'fb.1.' + ts + '.' + capturedData.fbclid;
-      updateStatus('Datos de Facebook capturados correctamente', false);
+        const timestamp = Math.floor(Date.now() / 1000);
+        capturedData.fbc = 'fb.1.' + timestamp + '.' + capturedData.fbclid;
+        updateStatus('Datos de Facebook capturados correctamente');
     } else {
-      // igual generamos algo para que no quede vacío
-      var ts2 = Math.floor(Date.now() / 1000);
-      capturedData.fbc = 'fb.1.' + ts2 + '.NO_FBCLID_' +
-                         Math.random().toString(36).substring(2, 8);
-      updateStatus('Advertencia: no se detectó fbclid (prueba sin anuncio)', true);
+        updateStatus('Advertencia: No se detectó fbclid', true);
     }
 
-    // =============== GENERAR FBP ========================
-    var ts3  = Math.floor(Date.now() / 1000);
-    var rnd  = Math.random().toString(36).substring(2, 15);
-    capturedData.fbp = 'fb.1.' + ts3 + '.' + rnd;
+    // Generar fbp (Facebook Browser Pixel)
+    const fbpTimestamp = Math.floor(Date.now() / 1000);
+    const fbpRandom    = Math.random().toString(36).substring(2, 15);
+    capturedData.fbp   = 'fb.1.' + fbpTimestamp + '.' + fbpRandom;
 
-    // =============== GENERAR session_id =================
-    var nowMs      = Date.now();
-    var randomPart = Math.random().toString(36).substring(2, 8);
-    capturedData.session_id = 'sess_' + nowMs + '_' + randomPart;
+    // Generar session_id (siempre, uno nuevo por clic)
+    const sessionID = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
+    capturedData.session_id = sessionID;
 
-    // =============== URL WHATSAPP =======================
-    var mensajeFinal = CONFIG.mensaje + '\n\nID:' + capturedData.session_id;
-    var whatsappURL  = 'https://wa.me/' + CONFIG.whatsappNumber +
-                       '?text=' + encodeURIComponent(mensajeFinal);
-    manualLink.href  = whatsappURL;
-
-    // =============== FUNCIONES DE REDIRECCIÓN ===========
-    function irAWhatsApp() {
-      updateStatus('Abriendo WhatsApp...', false);
-      window.location.href = whatsappURL;
+    // Mostrar datos si está en modo debug
+    if (CONFIG.debug) {
+        debugEl.innerHTML = '<strong>Datos capturados:</strong><pre>' + 
+            JSON.stringify(capturedData, null, 2) + '</pre>';
     }
+    
+    // Construir mensaje de WhatsApp con el ID
+    const mensajeID      = CONFIG.mensaje + '\n\nID:' + sessionID;
+    const mensajeEncoded = encodeURIComponent(mensajeID);
+    const whatsappURL    = 'https://wa.me/' + CONFIG.whatsappNumber + '?text=' + mensajeEncoded;
+    
+    // Configurar link manual
+    manualLinkEl.href = whatsappURL;
+    
+    // Enviar datos a Google Sheet
+    if (CONFIG.scriptURL && CONFIG.scriptURL.includes('script.google.com')) {
+        updateStatus('Guardando información de seguimiento...');
 
-    // =============== ENVIAR A GOOGLE SCRIPT =============
-    (function enviarDatos() {
-      if (!CONFIG.scriptURL || CONFIG.scriptURL.indexOf('script.google.com') === -1) {
-        // si no hay script configurado, igual redirigimos
-        setTimeout(irAWhatsApp, CONFIG.redirectDelay);
-        return;
-      }
-
-      updateStatus('Guardando información de seguimiento...', false);
-
-      try {
         fetch(CONFIG.scriptURL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(capturedData)
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(capturedData)
         })
-        .catch(function(e) {
-          // aunque falle, no frenamos la redirección
-          console.error('Error al enviar datos:', e);
+        .then(() => {
+            // Aunque no veamos la respuesta por no-cors, asumimos ok
+            updateStatus('Información guardada. Redirigiendo...');
+            setTimeout(() => window.location.href = whatsappURL, CONFIG.redirectDelay);
         })
-        .finally(function() {
-          setTimeout(irAWhatsApp, CONFIG.redirectDelay);
+        .catch(err => {
+            console.error('Error al guardar:', err);
+            updateStatus('Error al guardar. Redirigiendo igualmente...');
+            setTimeout(() => window.location.href = whatsappURL, CONFIG.redirectDelay);
         });
-      } catch (e) {
-        console.error('Error general:', e);
-        setTimeout(irAWhatsApp, CONFIG.redirectDelay);
-      }
-    })();
-
-    // =============== FALLBACK MANUAL ====================
-    setTimeout(function() {
-      fallbackEl.style.display = 'block';
+    } else {
+        updateStatus('Configuración pendiente. Redirigiendo...');
+        setTimeout(() => window.location.href = whatsappURL, CONFIG.redirectDelay);
+    }
+    
+    // Mostrar link manual si no redirige solo
+    setTimeout(() => {
+        fallbackEl.style.display = 'block';
+        updateStatus('¿No se abrió WhatsApp? Usa el botón de abajo');
     }, CONFIG.redirectDelay + 3000);
-  </script>
+</script>
 </body>
 </html>
