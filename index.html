@@ -125,8 +125,8 @@
         mensaje: "Hola! Me interesa recibir INFO",
         
         // Tiempo antes de redirigir (milisegundos)
-        redirectDelay: 500,
-        
+        redirectDelay: /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? 450 : 700,        
+      
         // Modo debug (cambiar a true para ver información técnica)
         debug: false
     };
