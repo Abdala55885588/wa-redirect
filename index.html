@@ -1,233 +1,166 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex, nofollow">
-    <title>Redirigiendo a WhatsApp...</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-            padding: 20px;
-        }
-        
-        .container {
-            text-align: center;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 50px 40px;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-        
-        .whatsapp-logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 30px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        h1 {
-            font-size: 26px;
-            color: #075E54;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-        
-        p {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.5;
-        }
-        
-        .loader {
-            border: 4px solid #e0e0e0;
-            border-top: 4px solid #25D366;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        .status {
-            font-size: 14px;
-            color: #999;
-            margin-top: 20px;
-        }
-        
-        .fallback-link {
-            display: none;
-            margin-top: 30px;
-        }
-        
-        .fallback-link a {
-            display: inline-block;
-            background: #25D366;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .fallback-link a:hover {
-            background: #128C7E;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        .debug {
-            display: none;
-            margin-top: 30px;
-            padding: 15px;
-            background: #f5f5f5;
-            border-radius: 10px;
-            font-size: 11px;
-            text-align: left;
-            word-break: break-all;
-            color: #666;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Redirigiendo a WhatsApp...</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, "Helvetica Neue", Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #25d366;
+    }
+    .box {
+      background: #fff;
+      padding: 24px 32px;
+      border-radius: 16px;
+      max-width: 360px;
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      color: #075e54;
+    }
+    p {
+      margin: 0 0 12px;
+      font-size: 14px;
+      color: #555;
+    }
+    .status {
+      font-size: 13px;
+      color: #777;
+      margin-top: 8px;
+    }
+    #fallback {
+      display: none;
+      margin-top: 16px;
+    }
+    #fallback a {
+      display: inline-block;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: #25d366;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <svg class="whatsapp-logo" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <path fill="#25D366" d="M16 0c-8.837 0-16 7.163-16 16 0 2.825 0.737 5.607 2.137 8.048l-2.137 7.952 7.933-2.127c2.42 1.37 5.173 2.127 8.067 2.127 8.837 0 16-7.163 16-16s-7.163-16-16-16zM16 29.467c-2.482 0-4.908-0.646-7.07-1.87l-0.507-0.292-5.247 1.408 1.407-5.24-0.292-0.508c-1.235-2.144-1.891-4.585-1.891-7.032 0-7.589 6.163-13.755 13.6-13.755s13.6 6.165 13.6 13.755c0 7.589-6.163 13.755-13.6 13.755z"/>
-            <path fill="#25D366" d="M23.307 19.183c-0.303-0.15-1.793-0.883-2.070-0.983-0.277-0.1-0.478-0.15-0.68 0.15s-0.781 0.983-0.958 1.185c-0.177 0.201-0.353 0.226-0.656 0.076s-1.278-0.471-2.434-1.502c-0.899-0.803-1.506-1.795-1.683-2.098s-0.019-0.461 0.132-0.611c0.135-0.135 0.303-0.353 0.454-0.529s0.201-0.303 0.303-0.504c0.1-0.201 0.050-0.378-0.025-0.529s-0.68-1.636-0.932-2.241c-0.245-0.587-0.494-0.508-0.68-0.517-0.176-0.008-0.378-0.010-0.58-0.010s-0.529 0.075-0.806 0.378c-0.277 0.303-1.058 1.034-1.058 2.522s1.083 2.925 1.234 3.127c0.151 0.201 2.13 3.251 5.158 4.558 0.72 0.31 1.283 0.495 1.721 0.634 0.724 0.230 1.383 0.198 1.904 0.120 0.581-0.087 1.793-0.733 2.046-1.441s0.253-1.315 0.177-1.441c-0.076-0.126-0.277-0.201-0.58-0.351z"/>
-        </svg>
-        
-        <h1>Conectando con WhatsApp</h1>
-        <p>Serás redirigido en un momento...</p>
-        
-        <div class="loader"></div>
-        
-        <div class="status" id="status">Preparando conexión...</div>
-        
-        <div class="fallback-link" id="fallback">
-            <a href="#" id="manualLink">Abrir WhatsApp manualmente</a>
-        </div>
-        
-        <div class="debug" id="debug"></div>
+  <div class="box">
+    <h1>Conectando con WhatsApp…</h1>
+    <p>En unos segundos se abrirá el chat.</p>
+    <div class="status" id="status">Preparando conexión…</div>
+    <div id="fallback">
+      <a id="manualLink" href="#" target="_blank">Abrir WhatsApp manualmente</a>
     </div>
+  </div>
 
-    <script>
-    // ==============================
-    // CONFIGURACIÓN
-    // ==============================
+  <script>
     const CONFIG = {
-        whatsappNumber: '525546242327', // sin +
-        scriptURL: 'https://script.google.com/macros/s/AKfycbxZuHpSgUgGaZ7M_DgAhye5liuG40LQuX0BMRB1rPZfgRHGrTVYzRSXKJdJUuYQcyKa/exec',
-        mensaje: "Hola! Me interesa recibir INFO",
-        redirectDelay: 2000,
-        debug: false
+      whatsappNumber: "525546242327", // sin +
+      scriptURL:
+        "https://script.google.com/macros/s/AKfycbxZuHpSgUgGaZ7M_DgAhye5liuG40LQuX0BMRB1rPZfgRHGrTVYzRSXKJdJUuYQcyKa/exec",
+      mensaje: "Hola! Me interesa recibir INFO",
+      redirectDelay: 2000,
+      debug: false,
     };
 
+    const statusEl = document.getElementById("status");
+    const fallbackEl = document.getElementById("fallback");
+    const manualLinkEl = document.getElementById("manualLink");
     const urlParams = new URLSearchParams(window.location.search);
-    const statusEl = document.getElementById('status');
-    const debugEl = document.getElementById('debug');
-    const fallbackEl = document.getElementById('fallback');
-    const manualLinkEl = document.getElementById('manualLink');
 
-    function updateStatus(message, isError = false) {
-        statusEl.textContent = message;
-        if (isError) statusEl.style.color = '#d32f2f';
-        if (CONFIG.debug) {
-            debugEl.style.display = 'block';
-            const time = new Date().toLocaleTimeString();
-            debugEl.innerHTML += <div><strong>${time}:</strong> ${message}</div>;
-        }
+    function updateStatus(msg, isError) {
+      statusEl.textContent = msg;
+      if (isError) statusEl.style.color = "#c62828";
     }
 
-    // Capturar datos básicos
+    // Datos capturados
     const capturedData = {
-        fbclid: urlParams.get('fbclid'),
-        campaign_id: urlParams.get('campaign_id'),
-        adset_id: urlParams.get('adset_id'),
-        ad_id: urlParams.get('ad_id'),
-        utm_source: urlParams.get('utm_source'),
-        utm_medium: urlParams.get('utm_medium'),
-        utm_campaign: urlParams.get('utm_campaign'),
-        user_agent: navigator.userAgent,
-        referrer: document.referrer,
-        timestamp: new Date().toISOString(),
-        page_url: window.location.href
+      fbclid: urlParams.get("fbclid"),
+      campaign_id: urlParams.get("campaign_id"),
+      adset_id: urlParams.get("adset_id"),
+      ad_id: urlParams.get("ad_id"),
+      utm_source: urlParams.get("utm_source"),
+      utm_medium: urlParams.get("utm_medium"),
+      utm_campaign: urlParams.get("utm_campaign"),
+      user_agent: navigator.userAgent,
+      referrer: document.referrer,
+      timestamp: new Date().toISOString(),
+      page_url: window.location.href,
     };
 
-    // FBC
+    // fbc (si no hay fbclid, generamos uno genérico)
     if (capturedData.fbclid) {
-        const ts = Math.floor(Date.now() / 1000);
-        capturedData.fbc = fb.1.${ts}.${capturedData.fbclid};
-        updateStatus('Datos de Facebook capturados correctamente');
+      const ts = Math.floor(Date.now() / 1000);
+      capturedData.fbc = fb.1.${ts}.${capturedData.fbclid};
     } else {
-        const ts = Math.floor(Date.now() / 1000);
-        capturedData.fbc = fb.1.${ts}.NO_FBCLID_${Math.random().toString(36).substring(2,8)};
-        updateStatus('Advertencia: No se detectó fbclid', true);
+      const ts = Math.floor(Date.now() / 1000);
+      capturedData.fbc = `fb.1.${ts}.NO_FBCLID_${Math.random()
+        .toString(36)
+        .substring(2, 8)}`;
+      updateStatus("Advertencia: no se detectó fbclid (prueba sin anuncio)", true);
     }
 
-    // FBP
-    capturedData.fbp = fb.1.${Math.floor(Date.now()/1000)}.${Math.random().toString(36).substring(2,15)};
+    // fbp
+    capturedData.fbp = `fb.1.${Math.floor(Date.now() / 1000)}.${Math.random()
+      .toString(36)
+      .substring(2, 15)}`;
 
-    // SESSION ID
-    capturedData.session_id = sess_${Date.now()}_${Math.random().toString(36).substring(2,8)};
+    // session_id
+    capturedData.session_id = `sess_${Date.now()}_${Math.random()
+      .toString(36)
+      .substring(2, 8)}`;
 
-    if (CONFIG.debug) {
-        debugEl.innerHTML = <strong>Datos capturados:</strong><pre>${JSON.stringify(capturedData, null, 2)}</pre>;
-    }
-
-    // Armar URL WhatsApp
+    // URL de WhatsApp
     const mensajeID = ${CONFIG.mensaje}\n\nID:${capturedData.session_id};
-    const whatsappURL = https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(mensajeID)};
+    const whatsappURL = `https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(
+      mensajeID
+    )}`;
     manualLinkEl.href = whatsappURL;
 
-    // Enviar a Google Script y redirigir
-    if (CONFIG.scriptURL && CONFIG.scriptURL.includes('script.google.com')) {
-        updateStatus('Guardando información de seguimiento...');
-        fetch(CONFIG.scriptURL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(capturedData)
-        })
-        .finally(() => {
-            updateStatus('Redirigiendo a WhatsApp...');
-            setTimeout(() => window.location.href = whatsappURL, CONFIG.redirectDelay);
-        });
-    } else {
-        updateStatus('Configuración pendiente. Redirigiendo...');
-        setTimeout(() => window.location.href = whatsappURL, CONFIG.redirectDelay);
+    // Enviar a Google Script y luego redirigir
+    function goWhatsApp() {
+      updateStatus("Abriendo WhatsApp…");
+      window.location.href = whatsappURL;
     }
 
-    // Mostrar botón manual
+    if (
+      CONFIG.scriptURL &&
+      CONFIG.scriptURL.indexOf("script.google.com") !== -1
+    ) {
+      updateStatus("Guardando información de seguimiento…");
+      fetch(CONFIG.scriptURL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(capturedData),
+      })
+        .catch((e) => {
+          // aunque falle, redirigimos igual
+          console.error(e);
+        })
+        .finally(() => {
+          setTimeout(goWhatsApp, CONFIG.redirectDelay);
+        });
+    } else {
+      updateStatus("Configuración pendiente. Redirigiendo…");
+      setTimeout(goWhatsApp, CONFIG.redirectDelay);
+    }
+
+    // Mostrar botón manual por si falla la redirección
     setTimeout(() => {
-        fallbackEl.style.display = 'block';
-        updateStatus('¿No se abrió WhatsApp? Usa el botón de abajo');
+      fallbackEl.style.display = "block";
     }, CONFIG.redirectDelay + 3000);
-    </script>
+  </script>
 </body>
 </html>
