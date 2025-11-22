@@ -228,6 +228,8 @@
         // Enviar datos a Google Sheet
         if (CONFIG.scriptURL && CONFIG.scriptURL.includes('script.google.com')) {
             updateStatus('Guardando información de seguimiento...');
+
+        capturedData.session_id = sessionID;
             
             fetch(CONFIG.scriptURL, {
                 method: 'POST',
