@@ -75,7 +75,8 @@
         whatsappNumber: '5215541707545',
         scriptURL: 'https://script.google.com/macros/s/AKfycbxHc2g5U1eOzT5UcYnJeTUFqAIZHh6EuCtRCOvAfzhNvX-aCt5yN-jb446xZ6R8CyU/exec',
         mensaje: "Hola! Me interesa recibir INFO",
-        redirectDelay: /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? 450 : 700,
+        // ✅ Reducido: 300ms móvil, 500ms desktop
+        redirectDelay: /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? 300 : 500,
         debug: false
     };
 
@@ -110,29 +111,21 @@
         user_agent:  navigator.userAgent,
         referrer:    document.referrer,
         timestamp:   new Date().toISOString(),
-        page_url:    'window.location.href'
+        page_url:    window.location.href  // ✅ corregido: variable, no string
     };
 
     // fbc — primero cookie, luego construir con fbclid
     const fbcFromCookie = getFbcFromCookie();
     if (fbcFromCookie) {
         capturedData.fbc = fbcFromCookie;
-        updateStatus('Datos de Facebook capturados desde cookie');
     } else if (capturedData.fbclid) {
         capturedData.fbc = 'fb.1.' + Date.now() + '.' + capturedData.fbclid;
-        updateStatus('Datos de Facebook capturados correctamente');
-    } else {
-        updateStatus('Advertencia: No se detectó fbclid', true);
     }
 
-    // ✅ fbp con delay para que el pixel tenga tiempo de setear la cookie _fbp
+    // fbp con delay para que el pixel tenga tiempo de setear la cookie
     setTimeout(function() {
         const fbpFromCookie = getFbpFromCookie();
-        if (fbpFromCookie) {
-            capturedData.fbp = fbpFromCookie;
-        } else {
-            capturedData.fbp = 'fb.1.' + Date.now() + '.' + Math.random().toString(36).substring(2, 15);
-        }
+        capturedData.fbp = fbpFromCookie || ('fb.1.' + Date.now() + '.' + Math.random().toString(36).substring(2, 15));
         const fbcCookie = getFbcFromCookie();
         if (fbcCookie && !capturedData.fbc) capturedData.fbc = fbcCookie;
     }, 300);
@@ -144,31 +137,25 @@
     const whatsappURL    = 'https://wa.me/' + CONFIG.whatsappNumber + '?text=' + mensajeEncoded;
     manualLinkEl.href    = whatsappURL;
 
+    // ✅ Fire and forget — no espera respuesta del GAS para redirigir
     if (CONFIG.scriptURL && CONFIG.scriptURL.includes('script.google.com')) {
-        updateStatus('Guardando información de seguimiento...');
         fetch(CONFIG.scriptURL, {
             method: 'POST',
             mode: 'no-cors',
+            keepalive: true,  // ✅ mantiene la request aunque se navegue
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(capturedData)
-        })
-        .then(() => {
-            updateStatus('Información guardada. Redirigiendo...');
-            // ✅ Evento Lead en el pixel con eventID para deduplicación
-            if (typeof fbq !== 'undefined') {
-                fbq('track', 'Lead', {}, { eventID: sessionID });
-            }
-            setTimeout(() => window.location.href = whatsappURL, CONFIG.redirectDelay);
-        })
-        .catch(() => {
-            updateStatus('Error al guardar. Redirigiendo igualmente...');
-            setTimeout(() => window.location.href = whatsappURL, CONFIG.redirectDelay);
-        });
-    } else {
-        updateStatus('Redirigiendo...');
-        setTimeout(() => window.location.href = whatsappURL, CONFIG.redirectDelay);
+        }).catch(() => {});
     }
 
+    // ✅ Pixel Lead + redirect inmediato sin esperar GAS
+    updateStatus('Redirigiendo...');
+    if (typeof fbq !== 'undefined') {
+        fbq('track', 'Lead', {}, { eventID: sessionID });
+    }
+    setTimeout(() => window.location.href = whatsappURL, CONFIG.redirectDelay);
+
+    // Botón manual de fallback
     setTimeout(() => {
         fallbackEl.style.display = 'block';
         updateStatus('¿No se abrió WhatsApp? Usa el botón de abajo');
