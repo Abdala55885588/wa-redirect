@@ -137,10 +137,10 @@
         if (fbcCookie && !capturedData.fbc) capturedData.fbc = fbcCookie;
     }, 300);
 
-    const sessionID = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
+    const sessionID = 'PROMO-' + Math.random().toString(36).substring(2, 8).toUpperCase();
     capturedData.session_id = sessionID;
 
-    const mensajeEncoded = encodeURIComponent(CONFIG.mensaje + '\n\nID:' + sessionID);
+    const mensajeEncoded = encodeURIComponent(CONFIG.mensaje + ' 🌟\n\nCódigo: ' + sessionID);
     const whatsappURL    = 'https://wa.me/' + CONFIG.whatsappNumber + '?text=' + mensajeEncoded;
     manualLinkEl.href    = whatsappURL;
 
