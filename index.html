@@ -75,8 +75,7 @@
         whatsappNumber: '5215541707545',
         scriptURL: 'https://script.google.com/macros/s/AKfycbxHc2g5U1eOzT5UcYnJeTUFqAIZHh6EuCtRCOvAfzhNvX-aCt5yN-jb446xZ6R8CyU/exec',
         mensaje: "Hola! Me interesa recibir INFO",
-        // ✅ Reducido: 300ms móvil, 500ms desktop
-        redirectDelay: /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? 300 : 500,
+        redirectDelay: 0,
         debug: false
     };
 
@@ -122,13 +121,11 @@
         capturedData.fbc = 'fb.1.' + Date.now() + '.' + capturedData.fbclid;
     }
 
-    // fbp con delay para que el pixel tenga tiempo de setear la cookie
-    setTimeout(function() {
-        const fbpFromCookie = getFbpFromCookie();
-        capturedData.fbp = fbpFromCookie || ('fb.1.' + Date.now() + '.' + Math.random().toString(36).substring(2, 15));
-        const fbcCookie = getFbcFromCookie();
-        if (fbcCookie && !capturedData.fbc) capturedData.fbc = fbcCookie;
-    }, 300);
+    // ✅ Lectura inmediata de cookies sin delay
+    const fbpFromCookie = getFbpFromCookie();
+    capturedData.fbp = fbpFromCookie || ('fb.1.' + Date.now() + '.' + Math.random().toString(36).substring(2, 15));
+    const fbcCookie = getFbcFromCookie();
+    if (fbcCookie && !capturedData.fbc) capturedData.fbc = fbcCookie;
 
     const sessionID = 'PROMO-' + Math.random().toString(36).substring(2, 8).toUpperCase();
     capturedData.session_id = sessionID;
